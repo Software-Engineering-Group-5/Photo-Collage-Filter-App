@@ -1,0 +1,53 @@
+ - Android Studio Project setup -
+
+Your 'AndroidManifest.xml' must contain:
+  <manifest>
+      ...
+      <uses-permission android:name="android.permission.INTERNET"/>
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  </manifest>
+
+Your 'app/build.gradle' script must contain:
+  dependencies {
+      ...
+      compile ('com.amazonaws:aws-android-sdk-mobile-client:2.6.+@aar') { transitive = true; }
+      compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.+'
+  }
+
+
+
+ - Configuration files setup -
+
+Navigate to 'https://console.aws.amazon.com/mobilehub/'
+
+Go to/set up your project, and click "Integrate"
+
+Download the "Cloud Config" and "Android Models".
+'awsconfiguration.json' goes in <app-folder>/app/src/main/res/raw.
+The Models come zipped in a folder hierarchy that gets put in <app-folder>. 
+
+
+
+ - Java Dependencies -
+
+Imports:
+  import com.amazonaws.mobile.client.AWSMobileClient;
+  import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+
+In your main activity:
+  DynamoDBMapper dynamoDBMapper;
+
+In your onCreate() method:
+  AWSMobileClient.getInstance().initialize(this).execute();
+
+  AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(AWSMobileClient.getInstance().getCredentialsProvider());
+  this.dynamoDBMapper = DynamoDBMapper.builder()
+    .dynamoDBClient(dynamoDBClient)
+    .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+    .build();
+
+
+
+ - Database Querying -
+
+Read 'https://docs.aws.amazon.com/aws-mobile/latest/developerguide/add-aws-mobile-nosql-database.html'
